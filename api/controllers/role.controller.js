@@ -1,16 +1,18 @@
 import Role from "../models/Role.js";
+import { CreateError } from "../utils/error.js";
+import { CreateSuccess } from "../utils/success.js";
 
 export const createRole = async (req, res, next) => {
   try {
     if (req.body.role && req.body.role !== "") {
       const newRole = new Role(req.body);
       await newRole.save();
-      return res.send("Role created successfully");
+      return next(CreateSuccess(200, "Role created successfully"));
     } else {
-      return res.status(400).send("Please provide a role");
+      return next(CreateError(400, "Bad request"));
     }
   } catch (error) {
-    return res.status(500).send("Internal Server Error");
+    return next(CreateError(500, "Internal Server Error"));
   }
 };
 
@@ -23,22 +25,21 @@ export const updateRole = async (req, res, next) => {
         { $set: req.body },
         { new: true }
       );
-      return res.status(200).send("Role updated successfully");
+      return next(CreateSuccess(200, "Role updated successfully"));
     } else {
-      return res.status(404).send("Role not found");
+      return next(CreateError(404, "Role not found"));
     }
   } catch (error) {
-    console.error("Error updating role:", error);
-    return res.status(500).send("Internal Server Error");
+    return next(CreateError(500, "Internal Server Error"));
   }
 };
 
 export const getRole = async (req, res, next) => {
   try {
     const roles = await Role.find({});
-    return res.status(200).send(roles);
+    return next(CreateSuccess(200, roles));
   } catch (error) {
-    return res.status(500).send("Internal Server Error");
+    return next(CreateError(500, "Internal Server Error"));
   }
 };
 
@@ -47,11 +48,11 @@ export const deleteRole = async (req, res, next) => {
     const roleId = req.params.id;
     const role = await Role.findByIdAndDelete(roleId);
     if (role) {
-      return res.status(200).send("Role deleted");
+      return next(CreateSuccess(200, "Role deleted"));
     } else {
-      return res.status(404).send("Role not found");
+      return next(CreateError(404, "Role not found"));
     }
   } catch (error) {
-    return res.status(500).send("Internal Server Error");
+    return next(CreateError(500, "Internal Server Error"));
   }
 };
