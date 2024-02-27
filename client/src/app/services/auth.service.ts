@@ -10,6 +10,10 @@ export class AuthService {
     http = inject(HttpClient)
 
     registerService(registerObj: any) {
-        return this.http.post<any>(`${apiUrls.authServiceApi}login`, registerObj)
+        return this.http.post<any>(`${apiUrls.authServiceApi}register`, registerObj)
+    }
+
+    loginService(loginObj: any) {
+        return this.http.post<any>(`${apiUrls.authServiceApi}login`, loginObj)
     }
 }

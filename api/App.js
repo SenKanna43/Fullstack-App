@@ -13,15 +13,16 @@ dotenv.config();
 
 app.use(express.json());
 app.use(cookieParser());
-app.use("/api/role", roleRoute);
-app.use("/api/auth", authRoute);
-app.use("/api/user", userRoute);
 app.use(
   cors({
-    origin: "http://localhost:4200",
+    origin: "*",
     credentials: true,
   })
 );
+app.use("/api/role", roleRoute);
+app.use("/api/auth", authRoute);
+app.use("/api/user", userRoute);
+
 // Response Handle Middleware
 
 app.use((obj, req, res, next) => {
