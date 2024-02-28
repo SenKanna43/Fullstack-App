@@ -28,17 +28,16 @@ export default class ForgotPasswordComponent {
   }
 
   submit() {
-    // this.authService.loginService(this.forgetForm.value)
-    //   .subscribe({
-    //     next: (res) => {
-    //       alert("Login in Success")
-    //       this.router.navigate(['home'])
-    //     },
-    //     error: (err) => {
-    //       console.log(err)
-    //     }
-    //   })
-    console.log(this.forgetForm.value)
+    this.authService.sendEmaliSercie(this.forgetForm.value.email)
+      .subscribe({
+        next: (res) => {
+          alert(res.message)
+          this.forgetForm.reset()
+        },
+        error: (err) => {
+          console.log(err)
+        }
+      })
   }
 
 }

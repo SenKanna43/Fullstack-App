@@ -34,7 +34,7 @@ export const login = async (req, res, next) => {
       "roles",
       "role"
     );
-    const { roles } = user;
+    const { roles } = user || {};
     if (!user) {
       return next(CreateError(404, "User not found"));
     }
@@ -54,6 +54,7 @@ export const login = async (req, res, next) => {
       .status(200)
       .json({ status: 200, message: "Login success", data: user });
   } catch (error) {
+    console.log(error);
     return next(CreateError(500, "Something went wrong"));
   }
 };
@@ -100,12 +101,12 @@ export const sendEmail = async (req, res, next) => {
     service: "gmail",
     auth: {
       user: "senthamaraikannanp@gmail.com",
-      pass: "vkpeebjcryenkacc",
+      pass: process.env.PASS,
     },
   });
 
   let mailDetails = {
-    form: "senthamaraikannanp@gmail.com",
+    from: "senthamaraikannanp@gmail.com",
     to: email,
     subject: "Reset Password",
     html: `
@@ -135,6 +136,36 @@ export const sendEmail = async (req, res, next) => {
     } else {
       await newToken.save();
       return next(CreateSuccess(200, "Email sent successfully"));
+    }
+  });
+};
+
+export const resetPassword = async (req, res, next) => {
+  const token = req.body.token;
+  const newPassword = req.body.password;
+
+  jwt.verify(token, process.env.JWT_SECRET, async (err, data) => {
+    if (err) {
+      return next(CreateError(500, "Reset Link is Expired"));
+    } else {
+      const response = data;
+      const user = await User.findOne({
+        email: { $regex: "^" + response.email + "$", $options: "i" },
+      });
+      const salt = await bcrypt.genSalt(10);
+      const encryptedPassword = await bcrypt.hash(newPassword, salt);
+      user.password = encryptedPassword;
+
+      try {
+        const updatedUser = await User.findOneAndUpdate(
+          { _id: user._id },
+          { $set: user },
+          { new: true }
+        );
+        return next(CreateSuccess(200, "Password reset successfully !"));
+      } catch (error) {
+        return next(CreateError(500, "Error while resetting password !"));
+      }
     }
   });
 };

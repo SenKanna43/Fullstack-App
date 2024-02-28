@@ -33,9 +33,12 @@ export default class LoginComponent {
       .subscribe({
         next: (res) => {
           alert("Login in Success")
+          localStorage.setItem("user_id", res.data._id)
+          this.authService.isLoggedIn$.next(true)
           this.router.navigate(['home'])
         },
         error: (err) => {
+          alert(err.error.message)
           console.log(err)
         }
       })
