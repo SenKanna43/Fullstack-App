@@ -100,13 +100,13 @@ export const sendEmail = async (req, res, next) => {
   const mailTransporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
-      user: "senthamaraikannanp@gmail.com",
+      user: "mail@gmail.com",
       pass: process.env.PASS,
     },
   });
 
   let mailDetails = {
-    from: "senthamaraikannanp@gmail.com",
+    from: "mail@gmail.com",
     to: email,
     subject: "Reset Password",
     html: `
